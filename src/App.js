@@ -7,16 +7,19 @@ function App() {
   // Función que pide un turno al backend
   const pedirTurno = async (tipo) => {
     try {
-      const res = await fetch("http://localhost:4000/turno", {
+      // Convertimos a minúscula para que coincida con el backend
+      const tipoBackend = tipo.toLowerCase();
+
+      const res = await fetch(`http://localhost:3001/turnos/${tipoBackend}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo }),
       });
+
       const data = await res.json();
       setTurno(data.numero);
       setPantalla("resultado");
     } catch (error) {
       console.error("Error al pedir turno:", error);
+      alert("No se pudo generar el turno. Verifique que el backend esté corriendo.");
     }
   };
 
@@ -43,13 +46,13 @@ function App() {
       <div style={{ textAlign: "center", marginTop: "20vh" }}>
         <button
           style={{ fontSize: 40, margin: 20 }}
-          onClick={() => pedirTurno("OS")}
+          onClick={() => pedirTurno("os")}
         >
           Obra Social
         </button>
         <button
           style={{ fontSize: 40, margin: 20 }}
-          onClick={() => pedirTurno("CP")}
+          onClick={() => pedirTurno("cp")}
         >
           Particular
         </button>
