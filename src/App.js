@@ -1,13 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [pantalla, setPantalla] = useState("inicio"); // inicio | opciones | resultado
   const [turno, setTurno] = useState(null);
 
+  // Timer que vuelve al inicio después de 4 segundos solo en pantalla "resultado"
+  useEffect(() => {
+    if (pantalla !== "resultado") return; // solo activar en pantalla resultado
+
+    const timer = setTimeout(() => {
+      setPantalla("inicio");
+    }, 4000);
+
+    const resetTimer = () => clearTimeout(timer);
+
+    window.addEventListener("click", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+    window.addEventListener("touchstart", resetTimer);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+      window.removeEventListener("touchstart", resetTimer);
+    };
+  }, [pantalla]);
+
   // Función que pide un turno al backend
   const pedirTurno = async (tipo) => {
     try {
-      // Convertimos a minúscula para que coincida con el backend
       const tipoBackend = tipo.toLowerCase();
 
       const res = await fetch(`http://localhost:3001/turnos/${tipoBackend}`, {
